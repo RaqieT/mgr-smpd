@@ -1,5 +1,8 @@
 package pl.michalowski.smpd.utils;
 
+import pl.michalowski.smpd.datatypes.DataRow;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class MathUtils {
@@ -21,5 +24,30 @@ public class MathUtils {
             result += Math.pow(x1.get(i) - x2.get(i), 2);
         }
         return Math.sqrt(result);
+    }
+
+    public static void recalculateAvgDataRow(DataRow avgPoint, List<DataRow> dataRows) {
+        if (dataRows.size() == 0) {
+            return;
+        }
+
+        if (dataRows.size() == 1) {
+            avgPoint.setValues(dataRows.get(0).getValues());
+        }
+
+        List<Double> sums = new ArrayList<>();
+
+        for (int i = 0; i < dataRows.get(0).getValues().size(); i++) {
+            final int z = i;
+            sums.add(dataRows.stream().map(dr -> dr.getValues().get(z)).reduce(0d, (a, b) -> a+b));
+        }
+
+
+        List<Double> result = new ArrayList<>();
+
+        for (Double value : sums) {
+            result.add(value/dataRows.size());
+        }
+        avgPoint.setValues(result);
     }
 }

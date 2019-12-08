@@ -1,6 +1,7 @@
 package pl.michalowski.smpd.datatypes;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 public class DataRow {
@@ -43,5 +44,20 @@ public class DataRow {
 
     public void setId(UUID id) {
         this.id = id;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataRow dataRow = (DataRow) o;
+        return Objects.equals(id, dataRow.id) &&
+                Objects.equals(label, dataRow.label) &&
+                Objects.equals(values, dataRow.values);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, label, values);
     }
 }

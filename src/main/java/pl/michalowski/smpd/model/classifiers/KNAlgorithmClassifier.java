@@ -13,7 +13,7 @@ public abstract class KNAlgorithmClassifier {
     protected long seed;
     protected List<DataRow> trainingSet;
     protected List<DataRow> testingSet;
-    protected List<DataRow> resultSet;
+    protected List<DataRow> resultSet = new ArrayList<>();
 
 
     public KNAlgorithmClassifier(int k, List<DataRow> dataSet, int trainingPercent, long seed) throws ArithmeticException {
