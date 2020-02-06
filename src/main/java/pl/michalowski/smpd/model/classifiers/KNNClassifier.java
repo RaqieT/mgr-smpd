@@ -10,8 +10,8 @@ import static java.util.Map.Entry.comparingByValue;
 
 public class KNNClassifier extends KNAlgorithmClassifier {
 
-    public KNNClassifier(int k, List<DataRow> dataSet, int trainingPercent, long seed) {
-        super(k, dataSet, trainingPercent, seed);
+    public KNNClassifier(int k, List<DataRow> dataSet, List<DataRow> trainingSet, List<DataRow> testingSet) {
+        super(k, dataSet, trainingSet, testingSet);
     }
 
     @Override

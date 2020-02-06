@@ -7,9 +7,11 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class KNMClassifier extends KNAlgorithmClassifier {
+    private long seed;
 
-    public KNMClassifier(int k, List<DataRow> dataSet, int trainingPercent, long seed) throws ArithmeticException {
-        super(k, dataSet, trainingPercent, seed);
+    public KNMClassifier(int k, List<DataRow> dataSet, List<DataRow> trainingSet, List<DataRow> testingSet, long seed) throws ArithmeticException {
+        super(k, dataSet, trainingSet, testingSet);
+        this.seed = seed;
     }
 
     @Override

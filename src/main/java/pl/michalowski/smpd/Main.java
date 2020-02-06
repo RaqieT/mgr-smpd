@@ -1,6 +1,7 @@
 package pl.michalowski.smpd;
 
 import pl.michalowski.smpd.datatypes.DataRow;
+import pl.michalowski.smpd.model.DataModifier;
 import pl.michalowski.smpd.model.classifiers.KNAlgorithmClassifier;
 import pl.michalowski.smpd.model.factory.ClassifierFactory;
 import pl.michalowski.smpd.model.factory.LinearDiscriminantFactory;
@@ -37,13 +38,14 @@ public class Main {
                 .type(Long.class)
                 .setDefault(System.currentTimeMillis())
                 .help("specify seed");
-        parser.addArgument("-f", "--fisher")
+        parser.addArgument("-fi", "--fisher")
+                .required(true)
                 .choices(Consts.Fisher.STANDARD, Consts.Fisher.FAST, Consts.Fisher.NONE)
                 .setDefault(Consts.Fisher.FAST)
                 .help("fisher method type");
-        parser.addArgument("-fpn", "--fisher_properties_number")
+        parser.addArgument("-fipn", "--fisher_properties_number")
                 .type(Integer.class)
-                .setDefault(2)
+                .setDefault(1)
                 .help("fisher properties number");
         Namespace ns = null;
         try {
@@ -53,18 +55,24 @@ public class Main {
             System.exit(1);
         }
 
-        List<DataRow> dataSet = FileImporter.convertFromCsv(ns.getString("file"));
+        List<DataRow> rawDataSet = FileImporter.convertFromCsv(ns.getString("file"));
 
+        // fisher
         Optional<FisherLinearDiscriminant> optionalFisherLinearDiscriminant = LinearDiscriminantFactory.create(ns.getString("fisher"),
-                dataSet,
                 ns.getInt("fisher_properties_number"));
 
+        // generating dataset, training set, testing set, applying fisher on them
+        DataModifier dataModifier;
         if (optionalFisherLinearDiscriminant.isPresent()) {
-           dataSet = optionalFisherLinearDiscriminant.get().pickBestProperties();
+            dataModifier = new DataModifier(rawDataSet, ns.getInt("training_set_percent"), ns.getLong("seed"), optionalFisherLinearDiscriminant.get());
+        } else {
+            dataModifier = new DataModifier(rawDataSet, ns.getInt("training_set_percent"), ns.getLong("seed"));
         }
+        dataModifier.loadDataSets();
 
-        KNAlgorithmClassifier classifier = ClassifierFactory.create(ns.getString("method"), ns.getInt("k"), dataSet,
-                ns.getInt("training_set_percent"), ns.getLong("seed"));
+        // applying algorithm
+        KNAlgorithmClassifier classifier = ClassifierFactory.create(ns.getString("method"), ns.getInt("k"),
+                dataModifier.getDataSet(), dataModifier.getTrainingSet(), dataModifier.getTestingSet(), ns.getLong("seed"));
         classifier.classify();
 
         System.out.println(classifier.getTruthLevel());

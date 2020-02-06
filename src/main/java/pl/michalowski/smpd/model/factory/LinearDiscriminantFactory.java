@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Optional;
 
 public class LinearDiscriminantFactory {
-    public static final Optional<FisherLinearDiscriminant> create(String type, List<DataRow> dataRows, Integer propNumber) {
+    public static final Optional<FisherLinearDiscriminant> create(String type, Integer propNumber) {
         switch (type) {
             case Consts.Fisher.STANDARD:
-                return Optional.of(new StandardFisherLinearDiscriminant(dataRows, propNumber));
+                return Optional.of(new StandardFisherLinearDiscriminant(propNumber));
             default:
                 return Optional.empty();
         }

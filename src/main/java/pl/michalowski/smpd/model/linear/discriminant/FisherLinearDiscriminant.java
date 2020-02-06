@@ -5,5 +5,5 @@ import pl.michalowski.smpd.datatypes.DataRow;
 import java.util.List;
 
 public interface FisherLinearDiscriminant {
-    List<DataRow> pickBestProperties();
+    List<Integer> getBestPropertiesCols(List<DataRow> trainingSet);
 }
