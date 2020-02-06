@@ -23,7 +23,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>pl.michalowski.smpd.Main</mainClass>
+                            <mainClass>pl.michalowski.smpd.Smpd</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

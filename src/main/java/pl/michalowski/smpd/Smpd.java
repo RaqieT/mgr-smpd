@@ -15,7 +15,7 @@ import net.sourceforge.argparse4j.inf.Namespace;
 import java.util.List;
 import java.util.Optional;
 
-public class Main {
+public class Smpd {
     public static void main(String[] args) {
         ArgumentParser parser = ArgumentParsers.newFor("smpd").build()
                 .defaultHelp(true)
@@ -25,6 +25,7 @@ public class Main {
                 .help("specify csv file with dataset");
         parser.addArgument("-m", "--method")
                 .choices(Consts.NearestNeighboursMethods.KNN, Consts.NearestNeighboursMethods.KNM)
+                .required(true)
                 .help("specify classifying method");
         parser.addArgument("-k")
                 .type(Integer.class)
@@ -39,9 +40,8 @@ public class Main {
                 .setDefault(System.currentTimeMillis())
                 .help("specify seed");
         parser.addArgument("-fi", "--fisher")
-                .required(true)
+                .setDefault(Consts.Fisher.NONE)
                 .choices(Consts.Fisher.STANDARD, Consts.Fisher.FAST, Consts.Fisher.NONE)
-                .setDefault(Consts.Fisher.FAST)
                 .help("fisher method type");
         parser.addArgument("-fipn", "--fisher_properties_number")
                 .type(Integer.class)
@@ -61,7 +61,7 @@ public class Main {
         Optional<FisherLinearDiscriminant> optionalFisherLinearDiscriminant = LinearDiscriminantFactory.create(ns.getString("fisher"),
                 ns.getInt("fisher_properties_number"));
 
-        // generating dataset, training set, testing set, applying fisher on them
+        // generating dataset, training set, testing set, applying fisher on them if chosen
         DataModifier dataModifier;
         if (optionalFisherLinearDiscriminant.isPresent()) {
             dataModifier = new DataModifier(rawDataSet, ns.getInt("training_set_percent"), ns.getLong("seed"), optionalFisherLinearDiscriminant.get());
