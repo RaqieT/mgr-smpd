@@ -11,9 +11,9 @@ import java.util.List;
 public class ClassifierFactory {
     public static KNAlgorithmClassifier create(String method, int k, List<DataRow> dataSet, int trainingSetPercent, long seed) {
         switch (method) {
-            case Consts.Methods.KNM:
+            case Consts.NearestNeighboursMethods.KNM:
                 return new KNMClassifier(k, dataSet, trainingSetPercent, seed);
-            case Consts.Methods.KNN:
+            case Consts.NearestNeighboursMethods.KNN:
             default:
                 return new KNNClassifier(k, dataSet, trainingSetPercent, seed);
         }

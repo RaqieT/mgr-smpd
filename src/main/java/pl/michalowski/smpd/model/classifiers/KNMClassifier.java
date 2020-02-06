@@ -5,7 +5,6 @@ import pl.michalowski.smpd.utils.MathUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class KNMClassifier extends KNAlgorithmClassifier {
 
@@ -43,7 +42,7 @@ public class KNMClassifier extends KNAlgorithmClassifier {
                     double minDistance = Double.MAX_VALUE;
                     DataRow closestAvgPoint = null;
                     for (DataRow avgPoint : avgPoints) {
-                        double currDistance = MathUtils.computeBetweenPointsDistance(avgPoint.getValues(), point.getValues());
+                        double currDistance = MathUtils.pointsBetweenDistance(avgPoint.getValues(), point.getValues());
                         if (currDistance < minDistance) {
                             closestAvgPoint = avgPoint;
                             minDistance = currDistance;
@@ -76,7 +75,7 @@ public class KNMClassifier extends KNAlgorithmClassifier {
             double minDistance = Double.MAX_VALUE;
             DataRow closestRow = null;
             for (DataRow trainingRow : finalPoints) {
-                double v = MathUtils.computeBetweenPointsDistance(dataRow.getValues(), trainingRow.getValues());
+                double v = MathUtils.pointsBetweenDistance(dataRow.getValues(), trainingRow.getValues());
                 if (v < minDistance) {
                     minDistance = v;
                     closestRow = trainingRow;

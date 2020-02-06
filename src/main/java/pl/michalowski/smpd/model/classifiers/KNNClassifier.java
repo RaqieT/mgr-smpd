@@ -18,16 +18,16 @@ public class KNNClassifier extends KNAlgorithmClassifier {
     protected void applyAlgorithm() {
         this.resultSet = new ArrayList<>();
         for (DataRow testingRow : testingSet) {
-            HashMap<DataRow, Double> distances = new HashMap<>();
+            Map<DataRow, Double> distancesForEveryTestingRow = new HashMap<>();
 
             for (DataRow trainingRow : trainingSet) {
-                distances.put(trainingRow, MathUtils.computeBetweenPointsDistance(testingRow.getValues(), trainingRow.getValues()));
+                distancesForEveryTestingRow.put(trainingRow, MathUtils.pointsBetweenDistance(testingRow.getValues(), trainingRow.getValues()));
             }
 
-            List<DataRow> closestPoints = distances
+            List<DataRow> closestPoints = distancesForEveryTestingRow
                     .entrySet()
                     .stream()
-                    .sorted(comparingByValue())
+                    .sorted(Map.Entry.comparingByValue())
                     .limit(k)
                     .map(Map.Entry::getKey)
                     .collect(Collectors.toList());
