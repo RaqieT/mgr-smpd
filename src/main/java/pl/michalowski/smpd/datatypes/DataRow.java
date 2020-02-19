@@ -60,4 +60,12 @@ public class DataRow {
     public int hashCode() {
         return Objects.hash(id, label, values);
     }
+
+    @Override
+    public String toString() {
+        return "DataRow{" +
+                "label=" + label +
+                ", values=" + values +
+                '}';
+    }
 }

@@ -45,6 +45,17 @@
             <artifactId>argparse4j</artifactId>
             <version>0.8.1</version>
         </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>RELEASE</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.dakusui</groupId>
+            <artifactId>combinatoradix</artifactId>
+            <version>0.8.2</version>
+        </dependency>
     </dependencies>
 
 </project>

@@ -1,5 +1,6 @@
 package pl.michalowski.smpd.model.factory;
 
+import org.apache.commons.lang3.NotImplementedException;
 import pl.michalowski.smpd.Consts;
 import pl.michalowski.smpd.datatypes.DataRow;
 import pl.michalowski.smpd.model.linear.discriminant.FisherLinearDiscriminant;
@@ -13,6 +14,8 @@ public class LinearDiscriminantFactory {
         switch (type) {
             case Consts.Fisher.STANDARD:
                 return Optional.of(new StandardFisherLinearDiscriminant(propNumber));
+            case Consts.Fisher.FAST:
+                throw new NotImplementedException("SFS is not implemented");
             default:
                 return Optional.empty();
         }

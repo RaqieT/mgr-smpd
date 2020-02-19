@@ -1,17 +1,17 @@
 package pl.michalowski.smpd.model.linear.discriminant;
 
-import pl.michalowski.smpd.datatypes.DataRow;
-
-import java.util.List;
-
 public abstract class AbstractFisherLinearDiscriminant implements FisherLinearDiscriminant {
-    protected Integer propertiesNumber;
+    protected Integer providedPropertiesNumber;
 
-    protected AbstractFisherLinearDiscriminant(Integer propertiesNumber) {
-        if (propertiesNumber <= 0) {
+    protected AbstractFisherLinearDiscriminant(Integer providedPropertiesNumber) {
+        if (providedPropertiesNumber <= 0) {
             throw new ArithmeticException("properties number must be greater than 0");
         }
 
-        this.propertiesNumber = propertiesNumber;
+        if (providedPropertiesNumber > 64) {
+            throw new ArithmeticException("properties number must be lower than 64");
+        }
+
+        this.providedPropertiesNumber = providedPropertiesNumber;
     }
 }

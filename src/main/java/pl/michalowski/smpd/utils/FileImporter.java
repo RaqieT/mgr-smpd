@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// DO PRZEPISANIA
 public class FileImporter {
     // this method reads whole label eg. Acer Rufinerve, Acer Saccharinum, Quercus Afares
     public static List<DataRow> alternativeConvertFromCsv(String fileName) {
