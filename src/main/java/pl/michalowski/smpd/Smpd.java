@@ -11,11 +11,13 @@ import net.sourceforge.argparse4j.ArgumentParsers;
 import net.sourceforge.argparse4j.inf.ArgumentParser;
 import net.sourceforge.argparse4j.inf.ArgumentParserException;
 import net.sourceforge.argparse4j.inf.Namespace;
+import pl.michalowski.smpd.utils.SimpleLogger;
 
 import java.util.List;
 import java.util.Optional;
 
 public class Smpd {
+    private static final SimpleLogger simpleLogger = new SimpleLogger(Smpd.class);
     public static void main(String[] args) {
         ArgumentParser parser = ArgumentParsers.newFor("smpd").build()
                 .defaultHelp(true)
@@ -75,6 +77,6 @@ public class Smpd {
                 dataModifier.getDataSet(), dataModifier.getTrainingSet(), dataModifier.getTestingSet(), ns.getLong("seed"));
         classifier.classify();
 
-        System.out.println(classifier.getTruthLevel());
+        simpleLogger.log("Truth level is: " + classifier.getTruthLevel());
     }
 }

@@ -51,7 +51,6 @@ public class StandardFisherLinearDiscriminant extends AbstractFisherLinearDiscri
             throw new ArithmeticException("Algorithm supports only two classes");
         }
 
-        List<PropertyVector> properties = new ArrayList<>();
 
         List<List<Double>> mappedA = aLabel.getValue().stream().map(DataRow::getValues).collect(Collectors.toList());
         List<List<Double>> transposedA = MathUtils.transposeMatrix(mappedA);
@@ -63,68 +62,38 @@ public class StandardFisherLinearDiscriminant extends AbstractFisherLinearDiscri
         Combinator<Integer> combinationsWithoutDuplicates = MathUtils.getCombinationsWithoutDuplicates(allPropsNumber, providedPropertiesNumber);
         int combinationNum = 1;
         long size = combinationsWithoutDuplicates.size();
+        double maxValue = Double.MIN_VALUE;
+        PropertyVector bestPropertyVector = null;
         for (List<Integer> columns : combinationsWithoutDuplicates) {
-            simpleLogger.log("Preparing data set. Progress: " + (combinationNum++) + "/" + size);
-            PropertyVector propertyVector = new PropertyVector(columns);
             List<List<Double>> aLabelPropertiesValues = new ArrayList<>();
             for (Integer colNum : columns) {
                 aLabelPropertiesValues.add(transposedA.get(colNum));
             }
-            propertyVector.setDataRowsFromLabelAValues(aLabelPropertiesValues);
+
             List<List<Double>> bLabelPropertiesValues = new ArrayList<>();
             for (Integer colNum : columns) {
                 bLabelPropertiesValues.add(transposedB.get(colNum));
             }
-            propertyVector.setDataRowsFromLabelBValues(bLabelPropertiesValues);
-            properties.add(propertyVector);
-        }
 
+            PropertyVector propertyVector = new PropertyVector(columns, aLabelPropertiesValues, bLabelPropertiesValues);
 
-
-
-//        for (int i = 0; i < allPropsNumber; i++) {
-//            // TODO: for j in propertiesNumber
-//            PropertyVector p = new PropertyVector(i);
-//
-//            // for a class/label
-//            List<Double> valueOfSingleProperty = new ArrayList<>();
-//            for (DataRow dataRow : aLabel.getValue()) {
-//                valueOfSingleProperty.add(dataRow.getValues().get(i));
-//            }
-//            p.setDataRowsFromLabelAValues(valueOfSingleProperty);
-//
-//            // for b class/label
-//            valueOfSingleProperty = new ArrayList<>();
-//            for (DataRow dataRow : bLabel.getValue()) {
-//                valueOfSingleProperty.add(dataRow.getValues().get(i));
-//            }
-//            p.setDataRowsFromLabelBValues(valueOfSingleProperty);
-//
-//
-//            properties.add(p); // sum of current property value for all data rows of current label
-//        }
-
-        double maxValue = Double.MIN_VALUE;
-        PropertyVector bestPropertyVector = null;
-
-        for (int i = 0; i < properties.size(); i++) {
-            PropertyVector propertyVector = properties.get(i);
             simpleLogger.log("Calculating Standard Fisher for " + propertyVector.getPropertyNumbers() + "...");
+
             Double fisherValue = propertyVector.calculateFisher();
 
             if (fisherValue > maxValue) {
-                bestPropertyVector = propertyVector;
                 maxValue = fisherValue;
+                bestPropertyVector = propertyVector;
             }
+
             simpleLogger.log("Done. Value is F = " + fisherValue
-                    + " | Best combination: " + (bestPropertyVector == null ? "none" : "(F = " + bestPropertyVector.getFisherValue() + ")" + bestPropertyVector.getPropertyNumbers())
-                    + " | Progress is " + (i + 1) + "/" + properties.size());
+                    + " | Best combinations: " + (bestPropertyVector == null ? "none" : "(F = " + bestPropertyVector.getFisherValue() + ") " + bestPropertyVector.getPropertyNumbers())
+                    + " | Progress is " + (combinationNum++) + "/" + size);
         }
 
         if (bestPropertyVector == null) {
             throw new ArithmeticException("Best property not found!");
         }
-
 
         return bestPropertyVector.getPropertyNumbers();
     }
@@ -137,17 +106,25 @@ public class StandardFisherLinearDiscriminant extends AbstractFisherLinearDiscri
         private List<List<Double>> dataRowsFromLabelAValues;
         private List<List<Double>> dataRowsFromLabelBValues;
         private List<Integer> propertyNumbers; // property numbers, size is equal to @providedPropertiesNumber < 64
+        private List<Double> miValueA;
+        private double dValueA;
+        private List<Double> miValueB;
+        private double dValueB;
         private Double fisherValue;
 
-        public PropertyVector(List<Integer> propertyNumbers) {
+        public PropertyVector(List<Integer> propertyNumbers,
+                              List<List<Double>> dataRowsFromLabelAValues,
+                              List<List<Double>> dataRowsFromLabelBValues) {
             this.propertyNumbers = propertyNumbers;
+            this.dataRowsFromLabelAValues = dataRowsFromLabelAValues;
+            this.dataRowsFromLabelBValues = dataRowsFromLabelBValues;
         }
 
         public Double calculateFisher() {
-            List<Double> miValueA = calculateMi(dataRowsFromLabelAValues);
-            double dValueA = MathUtils.determinant(MathUtils.transposeAndMultiplyMatrices(minusMi(miValueA, dataRowsFromLabelAValues)));
-            List<Double> miValueB = calculateMi(dataRowsFromLabelBValues);
-            double dValueB =  MathUtils.determinant(MathUtils.transposeAndMultiplyMatrices(minusMi(miValueB, dataRowsFromLabelBValues)));
+            miValueA = calculateMi(dataRowsFromLabelAValues);
+            dValueA = MathUtils.determinant(MathUtils.transposeAndMultiplyMatrices(minusMi(miValueA, dataRowsFromLabelAValues)));
+            miValueB = calculateMi(dataRowsFromLabelBValues);
+            dValueB =  MathUtils.determinant(MathUtils.transposeAndMultiplyMatrices(minusMi(miValueB, dataRowsFromLabelBValues)));
             fisherValue = Math.abs(MathUtils.pointsBetweenDistance(miValueA, miValueB))/(dValueA + dValueB);
             return fisherValue;
         }
@@ -178,6 +155,42 @@ public class StandardFisherLinearDiscriminant extends AbstractFisherLinearDiscri
 
         public void setDataRowsFromLabelBValues(List<List<Double>> dataRowsFromLabelBValues) {
             this.dataRowsFromLabelBValues = dataRowsFromLabelBValues;
+        }
+
+        public List<Double> getMiValueA() {
+            return miValueA;
+        }
+
+        public PropertyVector setMiValueA(List<Double> miValueA) {
+            this.miValueA = miValueA;
+            return this;
+        }
+
+        public double getdValueA() {
+            return dValueA;
+        }
+
+        public PropertyVector setdValueA(double dValueA) {
+            this.dValueA = dValueA;
+            return this;
+        }
+
+        public List<Double> getMiValueB() {
+            return miValueB;
+        }
+
+        public PropertyVector setMiValueB(List<Double> miValueB) {
+            this.miValueB = miValueB;
+            return this;
+        }
+
+        public double getdValueB() {
+            return dValueB;
+        }
+
+        public PropertyVector setdValueB(double dValueB) {
+            this.dValueB = dValueB;
+            return this;
         }
 
         public List<Integer> getPropertyNumbers() {
